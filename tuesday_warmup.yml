@@ -1,0 +1,10 @@
+---
+- name: Tuesday Challenge
+  hosts: zoidberg
+
+  tasks:
+   - name: install an app
+     apt:       
+        name: sl
+        state: present
+      become: true
