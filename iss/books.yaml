@@ -1,0 +1,22 @@
+- name: Query an Open API
+  hosts: localhost
+  connection: local
+
+  vars:
+     url: 'https://anapiofficeandfire.com/api/books'
+
+  tasks:
+  - name: Fetch books
+    uri:
+      url: "{{ url }}"
+    register: georgebookjson
+
+  - name: List Of George Books
+    debug:
+      var: item
+    loop: "{{ georgebookjson.json.name }}"
+
+   - name: List Of George Books                         
+     debug:
+       msg: "One of George R Martin's books is {{ name }}"
+      loop: "{{ georgebookjson.json.name }}"       

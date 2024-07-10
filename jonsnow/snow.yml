@@ -1,0 +1,19 @@
+---
+- name: Query ISS api with Ansible
+  hosts: localhost
+  gather_facts: no     # set to true by default, runs the "setup" module
+  
+    
+  tasks:
+    # this task is perfect as is
+  - name: Print out to the screen
+    uri:
+        url: https://anapioficeandfire.com/api/characters/583
+    register: jonsnow 
+                              
+    # this task is also great, just doesn't loop over anything yet
+  - name: Display the contents of the variable astrojson
+    debug:
+        var: item # item is the variable that represents each alias coming back from our loop
+    loop: "{{ jonsnow.json.aliases }}" # we don't want to loop over ALL the data, just the aliases                                         
+
