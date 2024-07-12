@@ -1,0 +1,54 @@
+---
+- name: Thursday morning challenge
+  hosts: zoidberg
+  connection: ssh
+  gather_facts: no
+  become: yes
+
+  vars:
+    pkg_list:
+      - fail2ban
+    config_file_loc: "/etc/fail2ban/jail.conf"
+
+  tasks:
+
+  - name: install apps
+    block:
+        - name: Update apt cache
+          apt:
+            update_cache: yes
+
+        - name: Install apps for minecraft server
+          apt:
+            name: "{{ pkg_list }}"
+            state: present
+    rescue:                           ### NEW!
+        - name: uninstall apps
+          apt:
+            name: "{{ pkg_list }}"
+            state: absent
+        - name: force a failure
+          fail:
+            msg: Apps failed to install correctly. Uninstalling...
+
+  - name: Setup fail2ban (ssh protection)
+    block:
+        - name: Copy fail2ban
+          copy:
+            src: "{{ config_file_loc }}"
+            dest: /etc/fail2ban/jail.local
+            remote_src: true
+
+        - name: Update fail2ban policy
+          lineinfile:
+            dest: /etc/fail2ban/jail.local
+            regexp: "^bantime  = 600$"
+            line: "bantime  = 20000"
+    rescue:                              ### NEW
+        - name: uninstall apps
+          apt:
+            name: "{{ pkg_list }}"
+            state: absent
+        - name: force a failure
+          fail:
+            msg: Apps failed to configure correctly. Uninstalling...

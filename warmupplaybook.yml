@@ -1,0 +1,17 @@
+---
+- name: Create directories for popular cartoon characters on farnsworth
+  hosts: farnsworth
+  gather_facts: no
+
+  vars_files:
+    - ansible_ssh_pass.yml
+
+  tasks:
+    - name: Retrieve Create directories for each cartoon character
+      uri:
+        url: https://thesimpsonsquoteapi.glitch.me/quotes
+      register: quotedata
+
+    - name: display quote
+      debug:
+        var: quotedata
